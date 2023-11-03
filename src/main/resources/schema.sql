@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS products;
+
 create table products
 (
     product_id BINARY(16) PRIMARY KEY,
