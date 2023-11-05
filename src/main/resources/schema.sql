@@ -10,3 +10,14 @@ create table products
     created_at datetime(6) NOT NULL,
     updated_at datetime(6) DEFAULT NULL
 );
+
+create table orders
+(
+    order_id BINARY(16) PRIMARY KEY,
+    email VARCHAR(30) NOT NULL,
+    address VARCHAR(30) NOT NULL,
+    postcode VARCHAR(20) NOT NULL,
+    order_status VARCHAR(20) NOT NULL,
+    created_at datetime(6) NOT NULL,
+    updated_at datetime(6) DEFAULT NULL
+);

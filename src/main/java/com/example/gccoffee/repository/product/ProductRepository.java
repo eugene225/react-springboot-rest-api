@@ -1,7 +1,7 @@
-package com.example.gccoffee.repository;
+package com.example.gccoffee.repository.product;
 
-import com.example.gccoffee.model.Category;
-import com.example.gccoffee.model.Product;
+import com.example.gccoffee.model.product.Category;
+import com.example.gccoffee.model.product.Product;
 
 import java.util.List;
 import java.util.Optional;

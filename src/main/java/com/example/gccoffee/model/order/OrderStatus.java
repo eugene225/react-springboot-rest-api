@@ -1,4 +1,4 @@
-package com.example.gccoffee.model;
+package com.example.gccoffee.model.order;
 
 public enum OrderStatus {
     ACCEPTED,

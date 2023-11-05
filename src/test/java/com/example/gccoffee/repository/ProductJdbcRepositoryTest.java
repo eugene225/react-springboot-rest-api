@@ -1,8 +1,8 @@
 package com.example.gccoffee.repository;
 
-import com.example.gccoffee.model.Category;
-import com.example.gccoffee.model.Product;
-import org.junit.jupiter.api.BeforeEach;
+import com.example.gccoffee.model.product.Category;
+import com.example.gccoffee.model.product.Product;
+import com.example.gccoffee.repository.product.ProductRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

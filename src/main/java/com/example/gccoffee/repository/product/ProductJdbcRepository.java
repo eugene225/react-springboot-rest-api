@@ -1,15 +1,12 @@
-package com.example.gccoffee.repository;
+package com.example.gccoffee.repository.product;
 
-import com.example.gccoffee.model.Category;
-import com.example.gccoffee.model.Product;
+import com.example.gccoffee.model.product.Category;
+import com.example.gccoffee.model.product.Product;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.nio.ByteBuffer;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.example.gccoffee.Utils.*;
