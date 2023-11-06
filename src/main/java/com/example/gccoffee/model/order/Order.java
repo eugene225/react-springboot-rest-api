@@ -14,6 +14,17 @@ public class Order {
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public Order(UUID orderId, Email email, String address, String postcode, OrderStatus orderStatus, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.orderId = orderId;
+        this.email = email;
+        this.address = address;
+        this.postcode = postcode;
+        this.orderItems = null;
+        this.orderStatus = orderStatus;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public Order(UUID orderId, Email email, String address, String postcode, List<OrderItem> orderItems, OrderStatus orderStatus, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.orderId = orderId;
         this.email = email;
