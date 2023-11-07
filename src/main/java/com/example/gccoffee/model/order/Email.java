@@ -2,16 +2,17 @@ package com.example.gccoffee.model.order;
 
 import org.springframework.util.Assert;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-public class Email {
+public class Email implements Serializable {
     private final String address;
 
     public Email(String address) {
         Assert.notNull(address, "address should not be null");
         Assert.isTrue(address.length() >= 4 && address.length() <= 50, "address length must be between 4 and 50 characters.");
-        Assert.isTrue(checkAddress(address), "Invalid email address");
+        //Assert.isTrue(checkAddress(address), "Invalid email address");
         this.address = address;
     }
     private static boolean checkAddress(String address) {
