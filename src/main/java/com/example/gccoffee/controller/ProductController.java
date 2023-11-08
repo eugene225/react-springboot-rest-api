@@ -1,10 +1,15 @@
 package com.example.gccoffee.controller;
 
+import com.example.gccoffee.controller.dto.CreateProductRequest;
+import com.example.gccoffee.model.product.Category;
 import com.example.gccoffee.service.product.ProductService;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.List;
 
 @Controller
 public class ProductController {
@@ -22,7 +27,9 @@ public class ProductController {
     }
 
     @GetMapping("new-product")
-    public String newProductPage() {
+    public String newProductPage(Model model) {
+        var categories = List.of(Category.values());
+        model.addAttribute("categories", categories);
         return "new-product";
     }
 

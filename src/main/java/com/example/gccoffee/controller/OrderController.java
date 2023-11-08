@@ -1,7 +1,7 @@
-package com.example.gccoffee.controller.api;
+package com.example.gccoffee.controller;
 
-import com.example.gccoffee.controller.CreateOrderRequest;
-import com.example.gccoffee.controller.UpdateOrderRequest;
+import com.example.gccoffee.controller.dto.CreateOrderRequest;
+import com.example.gccoffee.controller.dto.UpdateOrderRequest;
 import com.example.gccoffee.model.order.Order;
 import com.example.gccoffee.model.order.OrderItem;
 import com.example.gccoffee.model.order.OrderStatus;
@@ -18,16 +18,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Controller
 @RequestMapping("/orders")
-public class OrderRestController {
+public class OrderController {
     private final OrderService orderService;
     private final ProductService productService;
 
-    public OrderRestController(OrderService orderService, ProductService productService) {
+    public OrderController(OrderService orderService, ProductService productService) {
         this.orderService = orderService;
         this.productService = productService;
     }
@@ -35,6 +34,7 @@ public class OrderRestController {
     @GetMapping("/create-order")
     public String createOrder(@RequestParam(name = "category", required = false) String category, Model model) {
         List<Product> products;
+
         if(category != null && !category.isEmpty()) {
             products = productService.getProductByCategory(Category.valueOf(category));
         } else {

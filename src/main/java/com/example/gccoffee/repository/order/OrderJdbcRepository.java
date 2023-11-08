@@ -1,6 +1,6 @@
 package com.example.gccoffee.repository.order;
 
-import com.example.gccoffee.controller.UpdateOrderRequest;
+import com.example.gccoffee.controller.dto.UpdateOrderRequest;
 import com.example.gccoffee.model.order.Email;
 import com.example.gccoffee.model.order.Order;
 import com.example.gccoffee.model.order.OrderItem;

@@ -9,18 +9,15 @@
     <div class="row">
         <div class="col-md-6">
             <h3 class="mt-4">상품 목록</h3>
-            <label for="categoryFilter">카테고리:</label>
-            <div class="input-group">
-                <select class="custom-select" id="categoryFilter">
-                    <option value="">전체</option>
-                    <option th:each="category : ${categories}" th:value="${category}" th:text="${category}"></option>
-                </select>
-                <div class="input-group-append">
-                    <button class="btn btn-primary" type="button">
-                        <i class="fas fa-search"></i> 검색
-                    </button>
+            <form th:action="@{/orders/create-order}" method="get">
+                <div class="form-group">
+                    <label for="categoryFilter">Filter by Category:</label>
+                    <select class="form-control" id="categoryFilter" name="category">
+                        <option value="">All Products</option>
+                        <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
+                    </select>
                 </div>
-            </div>
+            </form>
 
             <table class="table">
                 <thead>
@@ -28,7 +25,6 @@
                     <th>상품명</th>
                     <th>가격</th>
                     <th>카테고리</th>
-                    <th>추가</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -36,14 +32,10 @@
                     <td th:text="${product.productName}"></td>
                     <td th:text="${product.price}"></td>
                     <td th:text="${product.category}"></td>
-                    <td>
-                        <button class="btn btn-primary"
-                                th:attr="data-productId=${product.productId}, data-productName=${product.productName}, data-productPrice=${product.price}"
-                                onclick="addToCart(this)">추가</button>
-                    </td>
                 </tr>
                 </tbody>
             </table>
+
         </div>
         <div class="col-md-6">
             <h3 class="mt-4">장바구니</h3>
@@ -81,6 +73,7 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script th:inline="javascript">
     var selectedProducts = [];
     var totalPrice = 0;
