@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>주문 정보 수정</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"></head>
+<body>
+<div class="container">
+    <h1>주문 수정</h1>
+    <form th:action="@{/orders/update/{orderId}(orderId=${orderId})}" method="post">
+        <div class="form-group">
+            <label for="address">주소</label>
+            <input type="text" class="form-control" id="address" name="address">
+        </div>
+        <div class="form-group">
+            <label for="postcode">우편번호</label>
+            <input type="text" class="form-control" id="postcode" name="postcode">
+        </div>
+        <div class="form-group">
+            <label for="orderStatus">주문 상태</label>
+            <select class="form-control" id="orderStatus" name="orderStatus">
+                <option th:each="status : ${orderStatusOptions}" th:value="${status}" th:text="${status}"></option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">저장</button>
+        <a th:href="@{/orders/details/{orderId}(orderId=${orderId})}" class="btn btn-secondary">취소</a>
+    </form>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h2>주문 상품 목록</h2>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>수량</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="orderItem : ${orderItems}">
+                    <td th:text="${orderItem.productName}"></td>
+                    <td th:text="${orderItem.price}"></td>
+                    <td th:text="${orderItem.quantity}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

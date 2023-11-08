@@ -1,5 +1,6 @@
 package com.example.gccoffee.repository.order;
 
+import com.example.gccoffee.controller.UpdateOrderRequest;
 import com.example.gccoffee.model.order.Order;
 import com.example.gccoffee.model.order.OrderItem;
 import com.example.gccoffee.model.order.OrderStatus;
@@ -10,7 +11,7 @@ import java.util.UUID;
 
 public interface OrderRepository {
     Order create(Order order);
-    void update(Order order);
+    void update(UUID orderId, UpdateOrderRequest updateOrderRequest);
     List<Order> findAll();
     Optional<Order> findById(UUID orderId);
     List<OrderItem> findItemsById(UUID orderId);

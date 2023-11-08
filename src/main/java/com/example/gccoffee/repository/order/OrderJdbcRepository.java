@@ -1,15 +1,18 @@
 package com.example.gccoffee.repository.order;
 
+import com.example.gccoffee.controller.UpdateOrderRequest;
 import com.example.gccoffee.model.order.Email;
 import com.example.gccoffee.model.order.Order;
 import com.example.gccoffee.model.order.OrderItem;
 import com.example.gccoffee.model.order.OrderStatus;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.example.gccoffee.Utils.toLocalDateTime;
@@ -43,12 +46,17 @@ public class OrderJdbcRepository implements OrderRepository{
     }
 
     @Override
-    public void update(Order order) {
+    @Transactional(rollbackFor = Exception.class)
+    public void update(UUID orderId, UpdateOrderRequest updateOrderRequest) {
+        var parameters = new MapSqlParameterSource()
+                .addValue("orderId", orderId.toString())
+                .addValue("address", updateOrderRequest.address())
+                .addValue("postcode", updateOrderRequest.postcode())
+                .addValue("orderStatus", updateOrderRequest.orderStatus().toString())
+                .addValue("updatedAt", LocalDateTime.now());
         var update = jdbcTemplate.update(
-                "UPDATE orders SET email = :email, address = :address, postcode = :postcode, order_status = :orderStatus, created_at = :createdAt, updated_at = :updatedAt" +
-                        " WHERE order_id = UUID_TO_BIN(:orderId)",
-                toOrderParamMap(order)
-        );
+                "UPDATE orders SET address = :address, postcode = :postcode, order_status = :orderStatus, updated_at = :updatedAt" +
+                        " WHERE order_id = UUID_TO_BIN(:orderId)", parameters);
         if(update != 1) {
             throw new RuntimeException("Nothing was updated");
         }

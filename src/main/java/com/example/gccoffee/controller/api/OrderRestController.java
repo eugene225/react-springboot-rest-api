@@ -1,8 +1,10 @@
 package com.example.gccoffee.controller.api;
 
 import com.example.gccoffee.controller.CreateOrderRequest;
+import com.example.gccoffee.controller.UpdateOrderRequest;
 import com.example.gccoffee.model.order.Order;
 import com.example.gccoffee.model.order.OrderItem;
+import com.example.gccoffee.model.order.OrderStatus;
 import com.example.gccoffee.model.product.Category;
 import com.example.gccoffee.model.product.Product;
 import com.example.gccoffee.service.order.OrderService;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
 import java.util.List;
@@ -70,6 +73,27 @@ public class OrderRestController {
         model.addAttribute("order", order);
         model.addAttribute("orderItems", orderItems);
         return "order-detail";
+    }
+
+    @GetMapping("/update/{orderId}")
+    public String updateOrder(@PathVariable UUID orderId, Model model) {
+        Order order = orderService.findById(orderId).get();
+        List<OrderItem> orderItems = orderService.findItemsById(orderId);
+        List<OrderStatus> orderStatusList = List.of(OrderStatus.values());
+
+        model.addAttribute("orderStatusOptions", orderStatusList);
+        model.addAttribute("orderItems", orderItems);
+        model.addAttribute("status", order.getOrderStatus().toString());
+
+        return "order-update";
+    }
+
+    @PostMapping("/update/{orderId}")
+    public ResponseEntity<String> updateOrder(@PathVariable UUID orderId, @ModelAttribute UpdateOrderRequest updateOrderRequest) {
+        orderService.update(orderId, updateOrderRequest);
+        return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                .header("Location", "/orders/order-detail/" + orderId.toString())
+                .body("");
     }
 
 }

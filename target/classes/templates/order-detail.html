@@ -58,7 +58,7 @@
         </div>
     </div>
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-        <a th:href="@{/orders/update-order}" class="btn btn-primary me-md-2" type="button">수정</a>
+        <a th:href="@{/orders/update/{orderId}(orderId=${order.getOrderId()})}" class="btn btn-primary me-md-2" type="button">수정</a>
         <a th:action="@{/orders/{orderId}(orderId=${order.getOrderId()})/delete}" th:method="post" class="btn btn-primary me-md-2" type="button">삭제</a>
         <a th:href="@{/orders}" class="btn btn-primary me-md-2" type="button">목록</a>
     </div>

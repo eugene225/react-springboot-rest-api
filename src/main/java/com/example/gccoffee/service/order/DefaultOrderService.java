@@ -1,6 +1,7 @@
 package com.example.gccoffee.service.order;
 
 import com.example.gccoffee.controller.CreateOrderRequest;
+import com.example.gccoffee.controller.UpdateOrderRequest;
 import com.example.gccoffee.model.order.Email;
 import com.example.gccoffee.model.order.Order;
 import com.example.gccoffee.model.order.OrderItem;
@@ -33,8 +34,8 @@ public class DefaultOrderService implements OrderService{
     }
 
     @Override
-    public void update(Order order) {
-        orderRepository.update(order);
+    public void update(UUID orderId, UpdateOrderRequest updateOrderRequest) {
+        orderRepository.update(orderId, updateOrderRequest);
     }
 
     @Override
