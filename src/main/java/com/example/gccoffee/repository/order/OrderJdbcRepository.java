@@ -11,6 +11,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -25,6 +26,7 @@ public class OrderJdbcRepository implements OrderRepository{
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Order create(Order order) {
         var update = jdbcTemplate.update("INSERT INTO orders(order_id, email, address, postcode, order_status, created_at, updated_at)" +
                 " VALUES (UUID_TO_BIN(:orderId), :email, :address, :postcode, :orderStatus, :createdAt, :updatedAt)", toOrderParamMap(order));
@@ -33,8 +35,8 @@ public class OrderJdbcRepository implements OrderRepository{
         } else{
             List<OrderItem> orderItems = order.getOrderItems();
             orderItems.forEach(orderItem -> {
-                var update1 = jdbcTemplate.update("INSERT INTO order_items(order_id, product_id, quantity)" +
-                        " VALUES (UUID_TO_BIN(:orderId), UUID_TO_BIN(:productId), :quantity)", toItemParamMap(order, orderItem));
+                var update1 = jdbcTemplate.update("INSERT INTO order_items(order_id, product_id, product_name, price, quantity)" +
+                        " VALUES (UUID_TO_BIN(:orderId), UUID_TO_BIN(:productId), :productName, :price, :quantity)", toItemParamMap(order, orderItem));
                 if(update1 != 1) {
                     throw new RuntimeException("INSERT ERROR : Order_items");
                 }
@@ -73,6 +75,12 @@ public class OrderJdbcRepository implements OrderRepository{
     }
 
     @Override
+    public List<OrderItem> findItemsById(UUID orderId) {
+        return jdbcTemplate.query("SELECT * FROM order_items WHERE order_id = UUID_TO_BIN(:orderId)",
+                Collections.singletonMap("orderId", orderId.toString()), orderItemRowMapper);
+    }
+
+    @Override
     public List<Order> findByStatus(OrderStatus orderStatus) {
         return jdbcTemplate.query("select * from orders WHERE order_status = :orderStatus",
                 Collections.singletonMap("orderStatus", orderStatus.toString()),
@@ -101,6 +109,16 @@ public class OrderJdbcRepository implements OrderRepository{
         return new Order(orderId, email, address, postcode, orderStatus, createdAt, updatedAt);
     };
 
+    private static final RowMapper<OrderItem> orderItemRowMapper = (resultSet, i) -> {
+        var orderId = toUUID(resultSet.getBytes("order_id"));
+        var productId = toUUID(resultSet.getBytes("product_id"));
+        var productName = resultSet.getString("product_name");
+        var price = resultSet.getLong("price");
+        var quantity = resultSet.getInt("quantity");
+
+        return new OrderItem(orderId, productId, productName, price, quantity);
+    };
+
     private Map<String, Object> toOrderParamMap(Order order){
         var paramMap = new HashMap<String, Object>();
         paramMap.put("orderId", order.getOrderId().toString());
@@ -117,6 +135,8 @@ public class OrderJdbcRepository implements OrderRepository{
         var paramMap = new HashMap<String, Object>();
         paramMap.put("orderId", order.getOrderId().toString());
         paramMap.put("productId", orderItem.getProductId().toString());
+        paramMap.put("productName", orderItem.getProductName());
+        paramMap.put("price", orderItem.getPrice());
         paramMap.put("quantity", orderItem.getQuantity());
         return paramMap;
     }

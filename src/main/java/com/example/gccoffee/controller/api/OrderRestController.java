@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/orders")
@@ -60,4 +62,14 @@ public class OrderRestController {
         model.addAttribute("orders", orders);
         return "order-list";
     }
+
+    @GetMapping("/order-detail/{orderId}")
+    public String getOrderDetail(@PathVariable UUID orderId, Model model) {
+        Order order = orderService.findById(orderId).get();
+        List<OrderItem> orderItems = orderService.findItemsById(orderId);
+        model.addAttribute("order", order);
+        model.addAttribute("orderItems", orderItems);
+        return "order-detail";
+    }
+
 }

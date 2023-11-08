@@ -14,12 +14,13 @@
             <th>이메일</th>
             <th>주소</th>
             <th>우편번호</th>
-            <th>총 가격</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="order : ${orders}">
-            <td th:text="${order.orderId}"></td>
+            <td>
+                <a th:href="@{/orders/order-detail/{orderId}(orderId=${order.orderId})}" th:text="${order.orderId}"></a>
+            </td>
             <td th:text="${order.email}"></td>
             <td th:text="${order.address}"></td>
             <td th:text="${order.postcode}"></td>

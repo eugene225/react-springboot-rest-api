@@ -3,6 +3,7 @@ package com.example.gccoffee.service.order;
 import com.example.gccoffee.controller.CreateOrderRequest;
 import com.example.gccoffee.model.order.Email;
 import com.example.gccoffee.model.order.Order;
+import com.example.gccoffee.model.order.OrderItem;
 import com.example.gccoffee.model.order.OrderStatus;
 import com.example.gccoffee.repository.order.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,11 @@ public class DefaultOrderService implements OrderService{
     @Override
     public Optional<Order> findById(UUID orderId) {
         return orderRepository.findById(orderId);
+    }
+
+    @Override
+    public List<OrderItem> findItemsById(UUID orderId) {
+        return orderRepository.findItemsById(orderId);
     }
 
     @Override

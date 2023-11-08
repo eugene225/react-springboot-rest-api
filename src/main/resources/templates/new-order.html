@@ -25,7 +25,7 @@
                     <td th:text="${product.category}"></td>
                     <td>
                         <button class="btn btn-primary"
-                                th:attr="data-productName=${product.productName}, data-productPrice=${product.price}"
+                                th:attr="data-productId=${product.productId}, data-productName=${product.productName}, data-productPrice=${product.price}"
                                 onclick="addToCart(this)">추가</button>
                     </td>
                 </tr>
@@ -73,6 +73,7 @@
     var totalPrice = 0;
 
     function addToCart(button) {
+        var productId = button.getAttribute("data-productId");
         var productName = button.getAttribute("data-productName");
         var productPrice = parseFloat(button.getAttribute("data-productPrice"));
 
@@ -86,7 +87,7 @@
             existingProduct.quantity += 1;
         } else {
             // 새로운 상품 추가
-            selectedProducts.push({ productName: productName, price: productPrice, quantity: 1 });
+            selectedProducts.push({ productId: productId, productName: productName, price: productPrice, quantity: 1 });
         }
         totalPrice += productPrice;
         updateCart();
