@@ -34,9 +34,7 @@ public class Email implements Serializable {
 
     @Override
     public String toString() {
-        return "Email{" +
-                "address='" + address + '\'' +
-                '}';
+        return "address='" + address;
     }
 
     public String getAddress() {

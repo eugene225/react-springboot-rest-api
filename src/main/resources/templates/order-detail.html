@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>주문 상세 정보</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-4">주문 상세 정보</h1>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h2>주문 정보</h2>
+            <p>주문 번호: <span th:text="${order.orderId}"></span></p>
+            <p>이메일: <span th:text="${order.email}"></span></p>
+            <p>주소: <span th:text="${order.address}"></span></p>
+            <p>우편번호: <span th:text="${order.postcode}"></span></p>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h2>주문 상품 목록</h2>
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>수량</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="product : ${order.orderItems}">
+                    <td th:text="${product.productName}"></td>
+                    <td th:text="${product.price}"></td>
+                    <td th:text="${product.quantity}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

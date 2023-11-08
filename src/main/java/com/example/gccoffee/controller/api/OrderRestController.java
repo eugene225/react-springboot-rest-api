@@ -54,5 +54,10 @@ public class OrderRestController {
         }
     }
 
-
+    @GetMapping
+    public String orderList(Model model) {
+        List<Order> orders = orderService.findAllOrders();
+        model.addAttribute("orders", orders);
+        return "order-list";
+    }
 }

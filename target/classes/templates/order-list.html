@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>주문 목록</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1>주문 목록</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>주문 번호</th>
+            <th>이메일</th>
+            <th>주소</th>
+            <th>우편번호</th>
+            <th>총 가격</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.orderId}"></td>
+            <td th:text="${order.email}"></td>
+            <td th:text="${order.address}"></td>
+            <td th:text="${order.postcode}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -27,7 +27,7 @@ public class DefaultOrderService implements OrderService{
 
     @Override
     public Order createOrder(CreateOrderRequest createOrderRequest) {
-        Order order = new Order(UUID.randomUUID(), new Email(createOrderRequest.email()), createOrderRequest.address(), createOrderRequest.postcode(), OrderStatus.ACCEPTED, LocalDateTime.now(), null);
+        Order order = new Order(UUID.randomUUID(), new Email(createOrderRequest.email()), createOrderRequest.address(), createOrderRequest.postcode(), createOrderRequest.orderItems(), OrderStatus.ACCEPTED, LocalDateTime.now(), null);
         return orderRepository.create(order);
     }
 

@@ -3,6 +3,7 @@ package com.example.gccoffee.repository.order;
 import com.example.gccoffee.controller.CreateOrderRequest;
 import com.example.gccoffee.model.order.Email;
 import com.example.gccoffee.model.order.Order;
+import com.example.gccoffee.model.order.OrderItem;
 import com.example.gccoffee.model.order.OrderStatus;
 import com.example.gccoffee.model.product.Category;
 import com.example.gccoffee.model.product.Product;
@@ -26,9 +27,18 @@ public class OrderJdbcRepository implements OrderRepository{
     @Override
     public Order create(Order order) {
         var update = jdbcTemplate.update("INSERT INTO orders(order_id, email, address, postcode, order_status, created_at, updated_at)" +
-                " VALUES (UUID_TO_BIN(:orderId), :email, :address, :postcode, :orderStatus, :createdAt, :updatedAt)", toParamMap(order));
+                " VALUES (UUID_TO_BIN(:orderId), :email, :address, :postcode, :orderStatus, :createdAt, :updatedAt)", toOrderParamMap(order));
         if(update != 1) {
             throw new RuntimeException("Nothing was inserted");
+        } else{
+            List<OrderItem> orderItems = order.getOrderItems();
+            orderItems.forEach(orderItem -> {
+                var update1 = jdbcTemplate.update("INSERT INTO order_items(order_id, product_id, quantity)" +
+                        " VALUES (UUID_TO_BIN(:orderId), UUID_TO_BIN(:productId), :quantity)", toItemParamMap(order, orderItem));
+                if(update1 != 1) {
+                    throw new RuntimeException("INSERT ERROR : Order_items");
+                }
+            });
         }
         return order;
     }
@@ -38,7 +48,7 @@ public class OrderJdbcRepository implements OrderRepository{
         var update = jdbcTemplate.update(
                 "UPDATE orders SET email = :email, address = :address, postcode = :postcode, order_status = :orderStatus, created_at = :createdAt, updated_at = :updatedAt" +
                         " WHERE order_id = UUID_TO_BIN(:orderId)",
-                toParamMap(order)
+                toOrderParamMap(order)
         );
         if(update != 1) {
             throw new RuntimeException("Nothing was updated");
@@ -91,7 +101,7 @@ public class OrderJdbcRepository implements OrderRepository{
         return new Order(orderId, email, address, postcode, orderStatus, createdAt, updatedAt);
     };
 
-    private Map<String, Object> toParamMap(Order order){
+    private Map<String, Object> toOrderParamMap(Order order){
         var paramMap = new HashMap<String, Object>();
         paramMap.put("orderId", order.getOrderId().toString());
         paramMap.put("email", order.getEmail().getAddress());
@@ -100,6 +110,14 @@ public class OrderJdbcRepository implements OrderRepository{
         paramMap.put("orderStatus", order.getOrderStatus().toString());
         paramMap.put("createdAt", order.getCreatedAt());
         paramMap.put("updatedAt", order.getUpdatedAt());
+        return paramMap;
+    }
+
+    private Map<String, Object> toItemParamMap(Order order, OrderItem orderItem){
+        var paramMap = new HashMap<String, Object>();
+        paramMap.put("orderId", order.getOrderId().toString());
+        paramMap.put("productId", orderItem.getProductId().toString());
+        paramMap.put("quantity", orderItem.getQuantity());
         return paramMap;
     }
 }

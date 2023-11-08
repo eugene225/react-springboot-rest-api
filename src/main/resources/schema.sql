@@ -28,7 +28,5 @@ create table order_items
 (
     order_id BINARY(16) NOT NULL,
     product_id BINARY(16) NOT NULL,
-    product_name VARCHAR(30) NOT NULL,
-    price bigint NOT NULL,
     quantity int NOT NULL
 )

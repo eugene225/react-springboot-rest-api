@@ -129,7 +129,7 @@
             email: email,
             address: address,
             postcode: postcode,
-            products: selectedProducts
+            orderItems: selectedProducts
         };
 
         // AJAX를 사용하여 서버로 주문 정보 전송
@@ -141,10 +141,12 @@
             success: function (response) {
                 // 주문 성공 시 수행할 작업
                 alert("주문이 성공적으로 처리되었습니다.");
+                window.location.href = "/orders";
             },
             error: function () {
                 // 오류 처리
                 alert("주문 처리에 실패했습니다.");
+                window.location.href = "/orders";
             }
         });
     }
