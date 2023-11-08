@@ -2,18 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>주문 정보 수정</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"></head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 <body>
 <div class="container">
-    <h1>주문 수정</h1>
+    <h1 class="mt-4">주문 수정</h1>
     <form th:action="@{/orders/update/{orderId}(orderId=${orderId})}" method="post">
         <div class="form-group">
             <label for="address">주소</label>
-            <input type="text" class="form-control" id="address" name="address">
+            <input th:value="${order.getAddress()}" type="text" class="form-control" id="address" name="address">
         </div>
         <div class="form-group">
             <label for="postcode">우편번호</label>
-            <input type="text" class="form-control" id="postcode" name="postcode">
+            <input th:value="${order.getPostcode()}" type="text" class="form-control" id="postcode" name="postcode">
         </div>
         <div class="form-group">
             <label for="orderStatus">주문 상태</label>
@@ -23,7 +23,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">저장</button>
-        <a th:href="@{/orders/details/{orderId}(orderId=${orderId})}" class="btn btn-secondary">취소</a>
+        <a th:href="@{/orders/order-detail/{orderId}(orderId=${orderId})}" class="btn btn-secondary">취소</a>
     </form>
 
     <div class="row mt-4">

@@ -93,9 +93,12 @@ public class OrderJdbcRepository implements OrderRepository{
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void deleteById(UUID orderId) {
-        jdbcTemplate.update("DELETE FROM orders where order_id = UUID_TO_BIN(:orderId)"
-                , Collections.singletonMap("orderId", orderId.toString()));
+        jdbcTemplate.update("DELETE FROM order_items WHERE order_id = UUID_TO_BIN(:orderId)",
+                Collections.singletonMap("orderId", orderId.toString()));
+        jdbcTemplate.update("DELETE FROM orders WHERE order_id = UUID_TO_BIN(:orderId)",
+                Collections.singletonMap("orderId", orderId.toString()));
     }
 
     @Override

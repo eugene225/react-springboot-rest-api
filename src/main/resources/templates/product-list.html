@@ -11,11 +11,7 @@
         <title>Grids & Circles</title>
     </head>
     <body class="container-fluid">
-        <h1>Grids & Circles</h1>
-        <h2>Production Management</h2>
-        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <a th:href="@{/new-product}" class="btn btn-primary me-md-2" type="button">Add Product</a>
-        </div>
+        <h2 class="mt-4">상품 목록</h2>
 
         <table class="table table-hover table-striped">
             <thead>
@@ -41,6 +37,10 @@
             </tr>
             </tbody>
         </table>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a th:href="@{/new-product}" class="btn btn-primary me-md-2" type="button">Add Product</a>
+        </div>
 
         <!-- Optional JavaScript; choose one of the two! -->
 

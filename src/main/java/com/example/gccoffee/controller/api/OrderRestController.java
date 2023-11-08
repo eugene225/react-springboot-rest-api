@@ -82,6 +82,7 @@ public class OrderRestController {
         List<OrderStatus> orderStatusList = List.of(OrderStatus.values());
 
         model.addAttribute("orderStatusOptions", orderStatusList);
+        model.addAttribute("order", order);
         model.addAttribute("orderItems", orderItems);
         model.addAttribute("status", order.getOrderStatus().toString());
 
@@ -94,6 +95,14 @@ public class OrderRestController {
         return ResponseEntity.status(HttpStatus.SEE_OTHER)
                 .header("Location", "/orders/order-detail/" + orderId.toString())
                 .body("");
+    }
+
+    @GetMapping("/delete/{orderId}")
+    public String deleteOrder(@PathVariable UUID orderId, RedirectAttributes redirectAttributes) {
+        orderService.deleteById(orderId);
+        redirectAttributes.addFlashAttribute("successMessage", "주문이 삭제되었습니다.");
+
+        return "redirect:/orders";
     }
 
 }
