@@ -17,8 +17,12 @@
                     <td th:text="${order.orderId}"></td>
                 </tr>
                 <tr>
+                    <th>주문 상태:</th>
+                    <td th:text="${order.orderStatus}"></td>
+                </tr>
+                <tr>
                     <th>이메일:</th>
-                    <td th:text="${order.email}"></td>
+                    <td th:text="${order.email.getAddress()}"></td>
                 </tr>
                 <tr>
                     <th>주소:</th>
@@ -52,6 +56,11 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <a th:href="@{/orders/update-order}" class="btn btn-primary me-md-2" type="button">수정</a>
+        <a th:action="@{/orders/{orderId}(orderId=${order.getOrderId()})/delete}" th:method="post" class="btn btn-primary me-md-2" type="button">삭제</a>
+        <a th:href="@{/orders}" class="btn btn-primary me-md-2" type="button">목록</a>
     </div>
 </div>
 </body>

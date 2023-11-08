@@ -1,12 +1,9 @@
 package com.example.gccoffee.repository.order;
 
-import com.example.gccoffee.controller.CreateOrderRequest;
 import com.example.gccoffee.model.order.Email;
 import com.example.gccoffee.model.order.Order;
 import com.example.gccoffee.model.order.OrderItem;
 import com.example.gccoffee.model.order.OrderStatus;
-import com.example.gccoffee.model.product.Category;
-import com.example.gccoffee.model.product.Product;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
