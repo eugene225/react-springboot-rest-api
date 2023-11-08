@@ -1,11 +1,14 @@
 package com.example.gccoffee.controller.api;
 
 import com.example.gccoffee.controller.CreateOrderRequest;
+import com.example.gccoffee.model.order.Order;
 import com.example.gccoffee.model.order.OrderItem;
 import com.example.gccoffee.model.product.Category;
 import com.example.gccoffee.model.product.Product;
 import com.example.gccoffee.service.order.OrderService;
 import com.example.gccoffee.service.product.ProductService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -41,19 +44,15 @@ public class OrderRestController {
     }
 
     @PostMapping("/create-order")
-    public String submitOrder(@RequestParam("email") String email,
-                              @RequestParam("address") String address,
-                              @RequestParam("postcode") String postcode,
-                              @ModelAttribute("selectedItems") List<OrderItem> selectedItems,
-                              Model model) {
-        // 여기서 주문 정보를 처리하고 저장하는 로직을 구현
-        CreateOrderRequest createOrderRequest = new CreateOrderRequest(email, address, postcode, selectedItems);
-        orderService.createOrder(createOrderRequest);
+    public ResponseEntity<String> createOrder(@RequestBody CreateOrderRequest orderRequest) {
+        Order order = orderService.createOrder(orderRequest);
 
-        // 주문 정보 처리 후, 화면에 메시지를 전달할 수 있음
-        model.addAttribute("message", "주문이 성공적으로 완료되었습니다.");
-
-        return "redirect:/orders/create-order"; // 주문 완료 페이지로 이동
+        if (order != null) {
+            return ResponseEntity.ok("주문이 성공적으로 처리되었습니다.");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("주문 처리에 실패했습니다.");
+        }
     }
+
 
 }

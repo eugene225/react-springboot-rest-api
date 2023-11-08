@@ -1,151 +1,155 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>카페 메뉴 주문</title>
-
-    <!-- 부트스트랩 CSS 및 JavaScript 링크 추가 -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>상품 주문</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <div class="container">
-    <h1 class="mt-5">카페 메뉴 주문</h1>
-
-    <div class="row mt-4">
+    <div class="row">
         <div class="col-md-6">
-            <!-- 왼쪽 목록: 모든 주문 가능한 항목 -->
-            <h2>주문 가능한 항목</h2>
-            <div class="form-group">
-                <label for="category">카테고리:</label>
-                <select class="form-control" id="category">
-                    <option value="all">전체</option>
-                    <th:block th:each="category : ${categories}">
-                        <option th:text="${category.name}" th:value="${category.name}">카테고리 이름</option>
-                    </th:block>
-                </select>
-            </div>
+            <h3>상품 목록</h3>
             <table class="table">
                 <thead>
                 <tr>
-                    <th>상품 이름</th>
-                    <th>상품 가격</th>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>카테고리</th>
                     <th>추가</th>
                 </tr>
                 </thead>
                 <tbody>
-                <th:block th:each="category : ${categories}">
-                    <tr th:each="product : ${products}">
-                        <td th:text="${product.productName}">상품 이름</td>
-                        <td th:text="${product.price} + '원'">상품 가격</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" th:attr="onclick='addItem(\'' + product + '\')'">추가</button>
-                        </td>
-                    </tr>
-                </th:block>
+                <tr th:each="product : ${products}">
+                    <td th:text="${product.productName}"></td>
+                    <td th:text="${product.price}"></td>
+                    <td th:text="${product.category}"></td>
+                    <td>
+                        <button class="btn btn-primary"
+                                th:attr="data-productName=${product.productName}, data-productPrice=${product.price}"
+                                onclick="addToCart(this)">추가</button>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
-
-        <!-- 오른쪽 목록: 선택한 항목 및 수량 조정 -->
         <div class="col-md-6">
-            <form th:action="@{/create-order}" method="post">
-                <h2>선택한 항목</h2>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>상품 이름</th>
-                        <th>수량</th>
-                        <th>삭제</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="selectedItem : ${selectedItems}">
-                        <td th:text="${selectedItem.productName}">상품 이름</td>
-                        <td>
-                            <input type="number" name="quantity" th:value="${selectedItem.quantity}" min="1" th:onchange="updateTotalAmount()">
-                        </td>
-                        <td>
-                            <button class="btn btn-danger btn-sm" th:attr="onclick='removeItem(this)'">삭제</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <!-- 사용자 정보 입력 -->
-                <div class="form-group mt-4">
+            <h3>장바구니</h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>상품명</th>
+                    <th>가격</th>
+                    <th>수량</th>
+                    <th>삭제</th>
+                </tr>
+                </thead>
+                <tbody id="cartTable">
+                <!-- 장바구니에 추가한 상품이 여기에 나열됩니다. -->
+                </tbody>
+            </table>
+            <form id="orderForm">
+                <div class="form-group">
                     <label for="email">이메일:</label>
-                    <input type="email" class="form-control" name="email" id="email" required>
+                    <input type="email" class="form-control" id="email" name="email">
                 </div>
-
                 <div class="form-group">
                     <label for="address">주소:</label>
-                    <input type="text" class="form-control" name="address" id="address" required>
+                    <input type="text" class="form-control" id="address" name="address">
                 </div>
-
                 <div class="form-group">
                     <label for="postcode">우편번호:</label>
-                    <input type="text" class="form-control" name="postcode" id="postcode" required>
+                    <input type="text" class="form-control" id="postcode" name="postcode">
                 </div>
-
-                <div class="form-group">
-                    <!-- 총 금액 표시 -->
-                    <p>총 금액: <span id="total-amount">0</span> 원</p>
-                </div>
-
-                <div class="form-group">
-                    <input type="submit" class="btn btn-primary" value="주문하기">
-                </div>
+                <p>총 가격: <span id="totalPrice">0</span></p>
+                <button type="button" class="btn btn-success" onclick="placeOrder()">주문</button>
             </form>
         </div>
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script th:inline="javascript">
-    /* 선택한 항목과 메뉴 가격을 JavaScript 변수로 가져옵니다. */
-    var menuItems = /*[[${products}]]*/ [];
-    var menuPrices = /*[[${menuPrices}]]*/ {};
-    var selectedItems = /*[[${selectedItems}]]*/ [];
+    var selectedProducts = [];
+    var totalPrice = 0;
 
-    function addItem(itemName) {
-        var existingItem = selectedItems.find(item => item.productName === itemName);
-        if (existingItem) {
-            // 이미 선택한 항목인 경우 수량 증가
-            existingItem.quantity++;
-        } else {
-            // 새로운 항목을 추가
-            var price = menuPrices[itemName];
-            var newItem = {
-                productName: itemName,
-                price: price,
-                quantity: 1
-            };
-            selectedItems.push(newItem);
-        }
-        updateTotalAmount();
-    }
+    function addToCart(button) {
+        var productName = button.getAttribute("data-productName");
+        var productPrice = parseFloat(button.getAttribute("data-productPrice"));
 
-
-
-    function removeItem(itemName) {
-        var itemIndex = selectedItems.findIndex(item => item.productName === itemName);
-        if (itemIndex !== -1) {
-            selectedItems.splice(itemIndex, 1);
-        }
-        updateTotalAmount();
-    }
-
-    function updateTotalAmount() {
-        let total = 0;
-        selectedItems.forEach(item => {
-            total += item.price * item.quantity;
+        // 이미 추가된 상품인지 확인
+        var existingProduct = selectedProducts.find(function (item) {
+            return item.productName === productName;
         });
-        totalAmount.textContent = total;
+
+        if (existingProduct) {
+            // 이미 추가된 상품이라면 수량만 증가
+            existingProduct.quantity += 1;
+        } else {
+            // 새로운 상품 추가
+            selectedProducts.push({ productName: productName, price: productPrice, quantity: 1 });
+        }
+        totalPrice += productPrice;
+        updateCart();
+    }
+
+    function removeFromCart(productName, productPrice) {
+        var existingProduct = selectedProducts.find(function (item) {
+            return item.productName === productName;
+        });
+
+        if (existingProduct) {
+            if (existingProduct.quantity > 1) {
+                existingProduct.quantity -= 1;
+            } else {
+                var index = selectedProducts.indexOf(existingProduct);
+                selectedProducts.splice(index, 1);
+            }
+            totalPrice -= productPrice;
+            updateCart();
+        }
+    }
+
+    function updateCart() {
+        var cartTable = document.getElementById("cartTable");
+        var totalPriceSpan = document.getElementById("totalPrice");
+        var cartHTML = "";
+        selectedProducts.forEach(function (product) {
+            cartHTML += "<tr id='" + product.productName + "'><td>" + product.productName + "</td><td>" + product.price + "원</td><td>" + product.quantity + "개</td><td><button class='btn btn-danger' onclick='removeFromCart(\"" + product.productName + "\", " + product.price + ")'>삭제</button></td></tr>";
+        });
+        cartTable.innerHTML = cartHTML;
+        totalPriceSpan.textContent = totalPrice;
+    }
+
+    function placeOrder() {
+        var email = document.getElementById("email").value;
+        var address = document.getElementById("address").value;
+        var postcode = document.getElementById("postcode").value;
+
+        var orderInfo = {
+            email: email,
+            address: address,
+            postcode: postcode,
+            products: selectedProducts
+        };
+
+        // AJAX를 사용하여 서버로 주문 정보 전송
+        $.ajax({
+            url: "/orders/create-order",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(orderInfo),
+            success: function (response) {
+                // 주문 성공 시 수행할 작업
+                alert("주문이 성공적으로 처리되었습니다.");
+                window.location.href = "/order-list";
+            },
+            error: function () {
+                // 오류 처리
+                alert("주문 처리에 실패했습니다.");
+                window.location.href = "/order-list";
+            }
+        });
     }
 </script>
-
-<!-- 부트스트랩 및 jQuery 및 Popper.js 스크립트 추가 -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
