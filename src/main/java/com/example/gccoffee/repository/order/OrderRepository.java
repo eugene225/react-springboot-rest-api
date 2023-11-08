@@ -12,7 +12,7 @@ public interface OrderRepository {
     void update(Order order);
     List<Order> findAll();
     Optional<Order> findById(UUID orderId);
-    Optional<Order> findByStatus(OrderStatus orderStatus);
+    List<Order> findByStatus(OrderStatus orderStatus);
     void deleteById(UUID orderId);
     void deleteAll();
 }

@@ -63,18 +63,21 @@ public class OrderJdbcRepository implements OrderRepository{
     }
 
     @Override
-    public Optional<Order> findByStatus(OrderStatus orderStatus) {
-        return Optional.empty();
+    public List<Order> findByStatus(OrderStatus orderStatus) {
+        return jdbcTemplate.query("select * from orders WHERE order_status = :orderStatus",
+                Collections.singletonMap("orderStatus", orderStatus.toString()),
+                orderRowMapper);
     }
 
     @Override
     public void deleteById(UUID orderId) {
-
+        jdbcTemplate.update("DELETE FROM orders where order_id = UUID_TO_BIN(:orderId)"
+                , Collections.singletonMap("orderId", orderId.toString()));
     }
 
     @Override
     public void deleteAll() {
-
+        jdbcTemplate.update("DELETE FROM orders", Collections.emptyMap());
     }
 
     private static final RowMapper<Order> orderRowMapper = (resultSet, i) -> {

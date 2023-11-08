@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -21,12 +22,37 @@ public class DefaultOrderService implements OrderService{
 
     @Override
     public List<Order> findAllOrders() {
-        return null;
+        return orderRepository.findAll();
     }
 
     @Override
     public Order createOrder(CreateOrderRequest createOrderRequest) {
         Order order = new Order(UUID.randomUUID(), new Email(createOrderRequest.email()), createOrderRequest.address(), createOrderRequest.postcode(), OrderStatus.ACCEPTED, LocalDateTime.now(), null);
         return orderRepository.create(order);
+    }
+
+    @Override
+    public void update(Order order) {
+        orderRepository.update(order);
+    }
+
+    @Override
+    public Optional<Order> findById(UUID orderId) {
+        return orderRepository.findById(orderId);
+    }
+
+    @Override
+    public List<Order> findByStatus(OrderStatus orderStatus) {
+        return orderRepository.findByStatus(orderStatus);
+    }
+
+    @Override
+    public void deleteById(UUID orderId) {
+        orderRepository.deleteById(orderId);
+    }
+
+    @Override
+    public void deleteAll() {
+        orderRepository.deleteAll();
     }
 }
