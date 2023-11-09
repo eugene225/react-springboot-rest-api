@@ -4,8 +4,9 @@ import com.example.gccoffee.controller.dto.CreateProductRequest;
 import com.example.gccoffee.controller.dto.UpdateProductRequest;
 import com.example.gccoffee.model.product.Category;
 import com.example.gccoffee.model.product.Product;
+import com.example.gccoffee.model.product.ProductQuantity;
+import com.example.gccoffee.service.product.ProductQuantityService;
 import com.example.gccoffee.service.product.ProductService;
-import org.springframework.boot.Banner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,14 +20,16 @@ import java.util.UUID;
 @RequestMapping("products")
 public class ProductController {
     private final ProductService productService;
+    private final ProductQuantityService productQuantityService;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ProductQuantityService productQuantityService) {
         this.productService = productService;
+        this.productQuantityService = productQuantityService;
     }
 
     @GetMapping
     public String productsPage(Model model) {
-        var products = productService.getAllProducts();
+        var products = productService.getAllProductDtos();
         model.addAttribute("products", products);
         return "product-list";
     }
@@ -40,11 +43,7 @@ public class ProductController {
 
     @PostMapping
     public String newProduct(CreateProductRequest createProductRequest) {
-        productService.createProduct(
-                createProductRequest.productName(),
-                createProductRequest.category(),
-                createProductRequest.price(),
-                createProductRequest.description());
+        productService.createProduct(createProductRequest);
         return "redirect:/products";
     }
 

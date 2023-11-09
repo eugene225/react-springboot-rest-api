@@ -1,5 +1,6 @@
 package com.example.gccoffee.repository.product;
 
+import com.example.gccoffee.controller.dto.ProductDto;
 import com.example.gccoffee.controller.dto.UpdateProductRequest;
 import com.example.gccoffee.model.product.Category;
 import com.example.gccoffee.model.product.Product;
@@ -29,13 +30,25 @@ public class ProductJdbcRepository implements ProductRepository{
     }
 
     @Override
-    public Product insert(Product product) {
+    public List<ProductDto> findAllDto() {
+        return jdbcTemplate.query("SELECT p.product_id, p.product_name, p.category, p.price, p.description, p.created_at AS created_at, p.updated_at AS updated_at, pq.quantity AS quantity\n" +
+                "FROM products p LEFT JOIN product_quantity pq ON p.product_id = pq.product_id", productDtoRowMapper);
+    }
+
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ProductDto insert(ProductDto productDto) {
         var update = jdbcTemplate.update("INSERT INTO products(product_id, product_name, category, price, description, created_at, updated_at)" +
-                " VALUES (UUID_TO_BIN(:productId), :productName, :category, :price, :description, :createdAt, :updatedAt)", toParamMap(product));
+                " VALUES (UUID_TO_BIN(:productId), :productName, :category, :price, :description, :createdAt, :updatedAt)", toParamMap(productDto));
         if(update != 1) {
             throw new RuntimeException("Nothing was inserted");
         }
-        return product;
+        var update1 = jdbcTemplate.update("INSERT INTO product_quantity(product_id, quantity) VALUES(UUID_TO_BIN(:productId), :quantity)", toQuantityParamMap(productDto));
+        if(update1 != 1) {
+            throw new RuntimeException("INSERT FAIL : product_quantity");
+        }
+        return productDto;
     }
 
     @Override
@@ -106,15 +119,34 @@ public class ProductJdbcRepository implements ProductRepository{
         return new Product(productId, productName, category, price, description, createdAt, updatedAt);
     };
 
-    private Map<String, Object> toParamMap(Product product){
+    private static final RowMapper<ProductDto> productDtoRowMapper = (resultSet, i) -> {
+        var productId = toUUID(resultSet.getBytes("product_id"));
+        var productName = resultSet.getString("product_name");
+        var quantity = resultSet.getInt("quantity");
+        var category = Category.valueOf(resultSet.getString("category"));
+        var price = resultSet.getLong("price");
+        var description = resultSet.getString("description");
+        var createdAt = toLocalDateTime(resultSet.getTimestamp("created_at"));
+        var updatedAt = toLocalDateTime(resultSet.getTimestamp("updated_at"));
+        return new ProductDto(productId, productName, category, quantity, price, description, createdAt, updatedAt);
+    };
+
+    private Map<String, Object> toParamMap(ProductDto productDto){
         var paramMap = new HashMap<String, Object>();
-        paramMap.put("productId", product.getProductId().toString());
-        paramMap.put("productName", product.getProductName());
-        paramMap.put("category", product.getCategory().toString());
-        paramMap.put("price", product.getPrice());
-        paramMap.put("description", product.getDescription());
-        paramMap.put("createdAt", product.getCreatedAt());
-        paramMap.put("updatedAt", product.getUpdatedAt());
+        paramMap.put("productId", productDto.productId().toString());
+        paramMap.put("productName", productDto.productName());
+        paramMap.put("category", productDto.category().toString());
+        paramMap.put("price", productDto.price());
+        paramMap.put("description", productDto.description());
+        paramMap.put("createdAt", productDto.createdAt());
+        paramMap.put("updatedAt", productDto.updatedAt());
+        return paramMap;
+    }
+
+    private Map<String, Object> toQuantityParamMap(ProductDto productDto){
+        var paramMap = new HashMap<String, Object>();
+        paramMap.put("productId", productDto.productId().toString());
+        paramMap.put("quantity", productDto.quantity());
         return paramMap;
     }
 }

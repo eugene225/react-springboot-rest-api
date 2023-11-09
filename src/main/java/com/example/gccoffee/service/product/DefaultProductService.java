@@ -1,5 +1,7 @@
 package com.example.gccoffee.service.product;
 
+import com.example.gccoffee.controller.dto.CreateProductRequest;
+import com.example.gccoffee.controller.dto.ProductDto;
 import com.example.gccoffee.controller.dto.UpdateProductRequest;
 import com.example.gccoffee.model.product.Category;
 import com.example.gccoffee.model.product.Product;
@@ -30,14 +32,14 @@ public class DefaultProductService implements ProductService{
     }
 
     @Override
-    public Product createProduct(String productName, Category category, long price) {
-        var product = new Product(UUID.randomUUID(), productName, category, price);
-        return productRepository.insert(product);
+    public List<ProductDto> getAllProductDtos() {
+        return productRepository.findAllDto();
     }
 
     @Override
-    public Product createProduct(String productName, Category category, long price, String description) {
-        var product = new Product(UUID.randomUUID(), productName, category, price, description, LocalDateTime.now(), LocalDateTime.now());
+    public ProductDto createProduct(CreateProductRequest createProductRequest) {
+        var product = new ProductDto(UUID.randomUUID(), createProductRequest.productName(), createProductRequest.category(), createProductRequest.quantity(), createProductRequest.price(), createProductRequest.description()
+        ,LocalDateTime.now(), null);
         return productRepository.insert(product);
     }
 

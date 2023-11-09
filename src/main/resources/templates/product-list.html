@@ -19,6 +19,7 @@
                 <th scope="col">Id</th>
                 <th scope="col">Name</th>
                 <th scope="col">Category</th>
+                <th scope="col">Quantity</th>
                 <th scope="col">Price</th>
                 <th scope="col">Description</th>
                 <th scope="col">CreatedAt</th>
@@ -26,16 +27,17 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="product: ${products}" th:object="${product}">
+            <tr th:each="product: ${products}">
                 <td>
-                    <a th:href="@{'products/product-detail/' + *{productId}}"><span th:text="*{productId}"></span></a>
+                    <a th:href="@{'products/product-detail/' + *{product.productId()}}"><span th:text="*{product.productId()}"></span></a>
                 </td>
-                <td th:text="*{productName}"></td>
-                <td th:text="*{category}"></td>
-                <td th:text="*{price}"></td>
-                <td th:text="*{description}"></td>
-                <td th:text="*{createdAt}"></td>
-                <td th:text="*{updatedAt}"></td>
+                <td th:text="*{product.productName()}"></td>
+                <td th:text="*{product.category()}"></td>
+                <td th:text="*{product.quantity()}"></td>
+                <td th:text="*{product.price()}"></td>
+                <td th:text="*{product.description()}"></td>
+                <td th:text="*{product.createdAt()}"></td>
+                <td th:text="*{product.updatedAt()}"></td>
             </tr>
             </tbody>
         </table>
