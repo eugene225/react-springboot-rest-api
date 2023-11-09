@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS product_quantity;
 
 create table products
 (
@@ -31,4 +32,10 @@ create table order_items
     product_name VARCHAR(20) NOT NULL,
     price BIGINT NOT NULL,
     quantity int NOT NULL
+);
+
+create table product_quantity
+(
+    product_id BINARY(16) NOT NULL,
+    quantity int NOT NULL DEFAULT 0
 );
