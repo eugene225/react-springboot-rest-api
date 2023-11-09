@@ -1,6 +1,5 @@
 package com.example.gccoffee.model;
 
-import com.example.gccoffee.model.order.Email;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
