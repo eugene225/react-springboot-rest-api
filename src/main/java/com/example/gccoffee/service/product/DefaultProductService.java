@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,5 +38,10 @@ public class DefaultProductService implements ProductService{
     public Product createProduct(String productName, Category category, long price, String description) {
         var product = new Product(UUID.randomUUID(), productName, category, price, description, LocalDateTime.now(), LocalDateTime.now());
         return productRepository.insert(product);
+    }
+
+    @Override
+    public Product findById(UUID productId) {
+        return productRepository.findById(productId).get();
     }
 }

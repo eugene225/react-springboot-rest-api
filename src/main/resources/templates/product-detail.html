@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Product Detail</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-4">Product Detail</h1>
+
+    <form th:action="@{/update-product}" method="post">
+        <div class="form-group">
+            <label for="productId">Product ID:</label>
+            <input type="text" class="form-control" id="productId" name="productId" th:value="${product.productId}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="productName">Product Name:</label>
+            <input type="text" class="form-control" id="productName" name="productName" th:value="${product.productName}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="category">Category:</label>
+            <select class="form-control" id="category" name="category" th:value="${product.category}" required>
+                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="price">Price:</label>
+            <input type="number" class="form-control" id="price" name="price" th:value="${product.price}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <textarea class="form-control" id="description" name="description" rows="4" th:text="${product.description}" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="createdAt">Created At:</label>
+            <input type="text" class="form-control" id="createdAt" name="createdAt" th:value="${product.createdAt}" readonly>
+        </div>
+
+        <div class="form-group">
+            <label for="updatedAt">Updated At:</label>
+            <input type="text" class="form-control" id="updatedAt" name="updatedAt" th:value="${product.updatedAt}" readonly>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a th:href="@{'/product-list'}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
