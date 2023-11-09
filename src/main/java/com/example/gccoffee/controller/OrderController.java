@@ -37,6 +37,7 @@ public class OrderController {
 
         if(category != null && !category.isEmpty()) {
             products = productService.getProductByCategory(Category.valueOf(category));
+            model.addAttribute("category", category);
         } else {
             products = productService.getAllProducts();
         }
