@@ -1,12 +1,16 @@
 package com.example.gccoffee.repository.product;
 
+import com.example.gccoffee.controller.dto.UpdateProductRequest;
 import com.example.gccoffee.model.product.Category;
 import com.example.gccoffee.model.product.Product;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.example.gccoffee.Utils.*;
@@ -35,16 +39,23 @@ public class ProductJdbcRepository implements ProductRepository{
     }
 
     @Override
-    public Product update(Product product) {
+    @Transactional(rollbackFor = Exception.class)
+    public void update(UUID productId, UpdateProductRequest updateProductRequest) {
+        var parameters = new MapSqlParameterSource()
+                .addValue("productId", productId.toString())
+                .addValue("productName", updateProductRequest.productName())
+                .addValue("category", updateProductRequest.category().toString())
+                .addValue("price", updateProductRequest.price())
+                .addValue("description", updateProductRequest.description())
+                .addValue("updatedAt", LocalDateTime.now());
         var update = jdbcTemplate.update(
-                "UPDATE products SET product_name = :productName, category = :category, price = :price, description = :description, created_at = :createdAt, updated_at = :updatedAt" +
+                "UPDATE products SET product_name = :productName, category = :category, price = :price, description = :description, updated_at = :updatedAt" +
                 " WHERE product_id = UUID_TO_BIN(:productId)",
-                toParamMap(product)
+                parameters
         );
         if(update != 1) {
             throw new RuntimeException("Nothing was updated");
         }
-        return product;
     }
 
     @Override

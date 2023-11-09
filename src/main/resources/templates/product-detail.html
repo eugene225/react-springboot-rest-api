@@ -8,7 +8,7 @@
 <div class="container">
     <h1 class="mt-4">Product Detail</h1>
 
-    <form th:action="@{/update-product}" method="post">
+    <form th:action="@{/products/product-detail/{productId}(productId=${product.getProductId()})}" method="post">
         <div class="form-group">
             <label for="productId">Product ID:</label>
             <input type="text" class="form-control" id="productId" name="productId" th:value="${product.productId}" readonly>
@@ -47,7 +47,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Save Changes</button>
-        <a th:href="@{'/product-list'}" class="btn btn-secondary">Cancel</a>
+        <a th:href="@{'/products'}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 
