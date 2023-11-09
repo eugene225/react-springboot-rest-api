@@ -17,6 +17,9 @@
                         <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}"></option>
                     </select>
                 </div>
+                <div class="mt-2">
+                    <button type="submit" class="btn btn-primary">Apply Filter</button>
+                </div>
             </form>
 
             <table class="table">
@@ -25,6 +28,7 @@
                     <th>상품명</th>
                     <th>가격</th>
                     <th>카테고리</th>
+                    <th>추가</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -32,6 +36,10 @@
                     <td th:text="${product.productName}"></td>
                     <td th:text="${product.price}"></td>
                     <td th:text="${product.category}"></td>
+                    <td>
+                        <button class="btn btn-primary" th:attr="data-productId=${product.productId}, data-productName=${product.productName}, data-productPrice=${product.price}"
+                                onclick="addToCart(this)">추가</button>
+                    </td>
                 </tr>
                 </tbody>
             </table>
