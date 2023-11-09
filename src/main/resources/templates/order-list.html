@@ -11,6 +11,7 @@
         <thead>
         <tr>
             <th>주문 번호</th>
+            <th>주문 상태</th>
             <th>이메일</th>
             <th>주소</th>
             <th>우편번호</th>
@@ -21,6 +22,7 @@
             <td>
                 <a th:href="@{/orders/order-detail/{orderId}(orderId=${order.orderId})}" th:text="${order.orderId}"></a>
             </td>
+            <td th:text="${order.orderStatus.name()}"></td>
             <td th:text="${order.email.getAddress()}"></td>
             <td th:text="${order.address}"></td>
             <td th:text="${order.postcode}"></td>

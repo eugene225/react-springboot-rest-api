@@ -1,7 +1,5 @@
 package com.example.gccoffee.model.order;
 
-import com.example.gccoffee.model.Email;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;

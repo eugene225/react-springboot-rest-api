@@ -31,4 +31,4 @@ create table order_items
     product_name VARCHAR(20) NOT NULL,
     price BIGINT NOT NULL,
     quantity int NOT NULL
-)
+);

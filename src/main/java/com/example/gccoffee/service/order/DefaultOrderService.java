@@ -2,7 +2,7 @@ package com.example.gccoffee.service.order;
 
 import com.example.gccoffee.controller.dto.CreateOrderRequest;
 import com.example.gccoffee.controller.dto.UpdateOrderRequest;
-import com.example.gccoffee.model.Email;
+import com.example.gccoffee.model.order.Email;
 import com.example.gccoffee.model.order.Order;
 import com.example.gccoffee.model.order.OrderItem;
 import com.example.gccoffee.model.order.OrderStatus;
