@@ -20,11 +20,9 @@ import java.util.UUID;
 @Service
 public class DefaultOrderService implements OrderService{
     private final OrderRepository orderRepository;
-    private final ProductQuantityService productQuantityService;
 
-    public DefaultOrderService(OrderRepository orderRepository, ProductQuantityService productQuantityService) {
+    public DefaultOrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-        this.productQuantityService = productQuantityService;
     }
 
     @Override
@@ -33,10 +31,10 @@ public class DefaultOrderService implements OrderService{
     }
 
     @Override
-    @Transactional
     public Order createOrder(CreateOrderRequest createOrderRequest) {
         Order order = new Order(UUID.randomUUID(), new Email(createOrderRequest.email()), createOrderRequest.address(), createOrderRequest.postcode(), createOrderRequest.orderItems(), OrderStatus.ACCEPTED, LocalDateTime.now(), null);
-        return orderRepository.create(order);
+        Order createdOrder = orderRepository.create(order);
+        return createdOrder;
     }
 
     @Override
