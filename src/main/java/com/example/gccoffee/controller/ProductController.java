@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.UUID;
@@ -66,5 +67,13 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.SEE_OTHER)
                 .header("Location", "/products")
                 .body("");
+    }
+
+    @GetMapping("/delete/{productId}")
+    public String deleteProduct(@PathVariable UUID productId, RedirectAttributes redirectAttributes) {
+        productService.deleteById(productId);
+        redirectAttributes.addFlashAttribute("successMessage", "주문이 삭제되었습니다.");
+
+        return "redirect:/products";
     }
 }

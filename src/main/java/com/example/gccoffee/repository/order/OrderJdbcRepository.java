@@ -26,6 +26,7 @@ public class OrderJdbcRepository implements OrderRepository{
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Order create(Order order) {
         var update = jdbcTemplate.update("INSERT INTO orders(order_id, email, address, postcode, order_status, created_at, updated_at)" +
                 " VALUES (UUID_TO_BIN(:orderId), :email, :address, :postcode, :orderStatus, :createdAt, :updatedAt)", toOrderParamMap(order));

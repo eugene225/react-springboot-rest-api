@@ -104,6 +104,15 @@ public class ProductJdbcRepository implements ProductRepository{
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteById(UUID productId) {
+        jdbcTemplate.update("DELETE FROM product_quantity WHERE product_id = UUID_TO_BIN(:productId)",
+                Collections.singletonMap("productId", productId.toString()));
+        jdbcTemplate.update("DELETE FROM products WHERE product_id = UUID_TO_BIN(:productId)",
+                Collections.singletonMap("productId", productId.toString()));
+    }
+
+    @Override
     public void deleteAll() {
         jdbcTemplate.update("DELETE FROM products", Collections.emptyMap());
     }

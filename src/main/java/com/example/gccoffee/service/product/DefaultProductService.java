@@ -58,4 +58,9 @@ public class DefaultProductService implements ProductService{
     public void updateProduct(UUID productId, UpdateProductRequest updateProductRequest) {
         productRepository.update(productId, updateProductRequest);
     }
+
+    @Override
+    public void deleteById(UUID productId) {
+        productRepository.deleteById(productId);
+    }
 }
