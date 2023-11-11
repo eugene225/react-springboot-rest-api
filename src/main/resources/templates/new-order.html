@@ -166,11 +166,22 @@
                 alert("주문이 성공적으로 처리되었습니다.");
                 window.location.href = "/orders";
             },
-            error: function () {
-                // 오류 처리
-                alert("주문 처리에 실패했습니다.");
-                window.location.href = "/orders";
+            error: function (xhr, status, error) {
+                if (xhr.status === 400) {
+                    // 400번 에러 처리
+                    if (xhr.responseText.includes("InvalidEmailPatternException")) {
+                        // 이메일 형식 오류
+                        alert("유효하지 않은 이메일 주소 형식입니다.");
+                    } else {
+                        // 재고 부족 에러
+                        alert(xhr.responseText); // 재고 부족 메시지 보여주기
+                    }
+                } else {
+                    // 기타 서버 에러 처리
+                    alert("서버 에러 발생. 주문 처리에 실패했습니다.");
+                }
             }
+
         });
     }
 

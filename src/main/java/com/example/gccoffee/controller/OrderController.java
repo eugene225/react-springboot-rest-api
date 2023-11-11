@@ -2,16 +2,21 @@ package com.example.gccoffee.controller;
 
 import com.example.gccoffee.controller.dto.CreateOrderRequest;
 import com.example.gccoffee.controller.dto.UpdateOrderRequest;
+import com.example.gccoffee.exception.InvalidEmailPatternException;
+import com.example.gccoffee.exception.InventoryShortageException;
 import com.example.gccoffee.model.order.Order;
 import com.example.gccoffee.model.order.OrderItem;
 import com.example.gccoffee.model.order.OrderStatus;
 import com.example.gccoffee.model.product.Category;
 import com.example.gccoffee.model.product.Product;
+import com.example.gccoffee.model.product.ProductQuantity;
 import com.example.gccoffee.service.order.OrderService;
+import com.example.gccoffee.service.product.ProductQuantityService;
 import com.example.gccoffee.service.product.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -19,16 +24,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.PatternSyntaxException;
 
 @Controller
 @RequestMapping("/orders")
 public class OrderController {
     private final OrderService orderService;
     private final ProductService productService;
+    private final ProductQuantityService productQuantityService;
 
-    public OrderController(OrderService orderService, ProductService productService) {
+    public OrderController(OrderService orderService, ProductService productService, ProductQuantityService productQuantityService) {
         this.orderService = orderService;
         this.productService = productService;
+        this.productQuantityService = productQuantityService;
     }
 
     @GetMapping("/create-order")
@@ -51,13 +59,14 @@ public class OrderController {
 
     @PostMapping("/create-order")
     public ResponseEntity<String> createOrder(@RequestBody CreateOrderRequest orderRequest) {
-        Order order = orderService.createOrder(orderRequest);
 
+        Order order = orderService.createOrder(orderRequest);
         if (order != null) {
             return ResponseEntity.ok("주문이 성공적으로 처리되었습니다.");
         } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("주문 처리에 실패했습니다.");
+            return ResponseEntity.internalServerError().body("주문에 실패 했습니다.");
         }
+
     }
 
     @GetMapping

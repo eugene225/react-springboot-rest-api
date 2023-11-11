@@ -1,5 +1,6 @@
 package com.example.gccoffee.model.order;
 
+import com.example.gccoffee.exception.InvalidEmailPatternException;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
@@ -15,8 +16,11 @@ public class Email implements Serializable {
         Assert.isTrue(checkAddress(address), "Invalid email address");
         this.address = address;
     }
-    private static boolean checkAddress(String address) {
-        return Pattern.matches("^\\w+@\\w+\\.\\w+(\\.\\w+)?$", address);
+    private static boolean checkAddress(String address) throws InvalidEmailPatternException {
+        if (!Pattern.matches("^\\w+@\\w+\\.\\w+(\\.\\w+)?$", address)) {
+            throw new InvalidEmailPatternException("이메일 주소 형식이 잘못되었습니다.");
+        }
+        return true;
     }
 
     @Override
