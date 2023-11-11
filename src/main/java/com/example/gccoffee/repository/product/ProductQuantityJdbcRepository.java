@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -32,9 +33,10 @@ public class ProductQuantityJdbcRepository {
         }
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public ProductQuantity update(UUID productId, int quantity) {
         var parameters = new MapSqlParameterSource()
-                .addValue("productId", productId)
+                .addValue("productId", productId.toString())
                 .addValue("quantity", quantity);
         var update = jdbcTemplate.update("UPDATE product_quantity SET quantity = :quantity WHERE product_id = UUID_TO_BIN(:productId)",
                 parameters);

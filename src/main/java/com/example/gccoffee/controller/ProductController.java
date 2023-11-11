@@ -1,6 +1,7 @@
 package com.example.gccoffee.controller;
 
 import com.example.gccoffee.controller.dto.CreateProductRequest;
+import com.example.gccoffee.controller.dto.ProductDto;
 import com.example.gccoffee.controller.dto.UpdateProductRequest;
 import com.example.gccoffee.model.product.Category;
 import com.example.gccoffee.model.product.Product;
@@ -49,10 +50,10 @@ public class ProductController {
 
     @GetMapping("/product-detail/{productId}")
     public String productDetail(@PathVariable UUID productId, Model model) {
-        Product product = productService.findById(productId);
+        ProductDto productDto = productService.findById(productId);
         List<Category> categories = List.of(Category.values());
 
-        model.addAttribute("product", product);
+        model.addAttribute("product", productDto);
         model.addAttribute("categories", categories);
         return "product-detail";
     }
@@ -61,6 +62,7 @@ public class ProductController {
     public ResponseEntity<String> productUpdate(@PathVariable UUID productId,
                                                 @ModelAttribute UpdateProductRequest updateProductRequest) {
         productService.updateProduct(productId, updateProductRequest);
+        productQuantityService.updateQuantity(productId, updateProductRequest.quantity());
         return ResponseEntity.status(HttpStatus.SEE_OTHER)
                 .header("Location", "/products")
                 .body("");
