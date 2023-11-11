@@ -2,14 +2,13 @@ package com.example.gccoffee.service.order;
 
 import com.example.gccoffee.controller.dto.CreateOrderRequest;
 import com.example.gccoffee.controller.dto.UpdateOrderRequest;
-import com.example.gccoffee.exception.InventoryShortageException;
 import com.example.gccoffee.model.order.Email;
 import com.example.gccoffee.model.order.Order;
 import com.example.gccoffee.model.order.OrderItem;
 import com.example.gccoffee.model.order.OrderStatus;
-import com.example.gccoffee.model.product.ProductQuantity;
 import com.example.gccoffee.repository.order.OrderRepository;
 import com.example.gccoffee.repository.product.ProductQuantityJdbcRepository;
+import com.example.gccoffee.service.product.ProductQuantityService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +20,11 @@ import java.util.UUID;
 @Service
 public class DefaultOrderService implements OrderService{
     private final OrderRepository orderRepository;
-    private final ProductQuantityJdbcRepository productQuantityJdbcRepository;
+    private final ProductQuantityService productQuantityService;
 
-    public DefaultOrderService(OrderRepository orderRepository, ProductQuantityJdbcRepository productQuantityJdbcRepository) {
+    public DefaultOrderService(OrderRepository orderRepository, ProductQuantityService productQuantityService) {
         this.orderRepository = orderRepository;
-        this.productQuantityJdbcRepository = productQuantityJdbcRepository;
+        this.productQuantityService = productQuantityService;
     }
 
     @Override
@@ -37,20 +36,6 @@ public class DefaultOrderService implements OrderService{
     @Transactional
     public Order createOrder(CreateOrderRequest createOrderRequest) {
         Order order = new Order(UUID.randomUUID(), new Email(createOrderRequest.email()), createOrderRequest.address(), createOrderRequest.postcode(), createOrderRequest.orderItems(), OrderStatus.ACCEPTED, LocalDateTime.now(), null);
-        List<OrderItem> orderItems = createOrderRequest.orderItems();
-        for (OrderItem orderItem : orderItems) {
-            ProductQuantity productQuantity = productQuantityJdbcRepository.findByProductId(orderItem.getProductId()).get();
-            int availableQuantity = productQuantity.getQuantity();
-
-            if (availableQuantity < orderItem.getQuantity()) {
-                throw new InventoryShortageException("[재고부족] 상품 : " + orderItem.getProductName() + ", 남은수량 : " + availableQuantity);
-            }
-        }
-        orderItems.forEach(orderItem -> {
-            ProductQuantity productQuantity = productQuantityJdbcRepository.findByProductId(orderItem.getProductId()).get();
-            int availableQuantity = productQuantity.getQuantity();
-            productQuantityJdbcRepository.update(orderItem.getProductId(), availableQuantity - orderItem.getQuantity());
-        });
         return orderRepository.create(order);
     }
 

@@ -7,28 +7,30 @@
 <body>
 <div class="container">
     <h1 class="mt-4">주문 목록</h1>
-    <table class="table">
-        <thead>
-        <tr>
-            <th>주문 번호</th>
-            <th>주문 상태</th>
-            <th>이메일</th>
-            <th>주소</th>
-            <th>우편번호</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="order : ${orders}">
-            <td>
-                <a th:href="@{/orders/order-detail/{orderId}(orderId=${order.orderId})}" th:text="${order.orderId}"></a>
-            </td>
-            <td th:text="${order.orderStatus.name()}"></td>
-            <td th:text="${order.email.getAddress()}"></td>
-            <td th:text="${order.address}"></td>
-            <td th:text="${order.postcode}"></td>
-        </tr>
-        </tbody>
-    </table>
+    <!-- 주문 상태별로 세 구역으로 분리 -->
+    <div th:each="status : ${T(com.example.gccoffee.model.order.OrderStatus).values()}">
+        <h2 th:text="${status.name()}"></h2>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>주문 번호</th>
+                <th>이메일</th>
+                <th>주소</th>
+                <th>우편번호</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}" th:if="${order.orderStatus == status}">
+                <td>
+                    <a th:href="@{/orders/order-detail/{orderId}(orderId=${order.orderId})}" th:text="${order.orderId}"></a>
+                </td>
+                <td th:text="${order.email.getAddress()}"></td>
+                <td th:text="${order.address}"></td>
+                <td th:text="${order.postcode}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 </body>
 </html>

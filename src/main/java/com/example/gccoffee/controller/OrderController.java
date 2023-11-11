@@ -59,14 +59,13 @@ public class OrderController {
 
     @PostMapping("/create-order")
     public ResponseEntity<String> createOrder(@RequestBody CreateOrderRequest orderRequest) {
-
+        productQuantityService.updateQuantityByOrderItems(orderRequest.orderItems());
         Order order = orderService.createOrder(orderRequest);
         if (order != null) {
             return ResponseEntity.ok("주문이 성공적으로 처리되었습니다.");
         } else {
             return ResponseEntity.internalServerError().body("주문에 실패 했습니다.");
         }
-
     }
 
     @GetMapping
