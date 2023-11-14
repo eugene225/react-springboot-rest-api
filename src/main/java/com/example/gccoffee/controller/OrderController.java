@@ -24,6 +24,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.PatternSyntaxException;
 
 @Controller
@@ -59,12 +61,19 @@ public class OrderController {
 
     @PostMapping("/create-order")
     public ResponseEntity<String> createOrder(@RequestBody CreateOrderRequest orderRequest) {
-        productQuantityService.updateQuantityByOrderItems(orderRequest.orderItems());
-        Order order = orderService.createOrder(orderRequest);
-        if (order != null) {
-            return ResponseEntity.ok("주문이 성공적으로 처리되었습니다.");
-        } else {
-            return ResponseEntity.internalServerError().body("주문에 실패 했습니다.");
+        Lock lock = new ReentrantLock();
+        lock.lock();
+
+        try {
+            productQuantityService.updateQuantityByOrderItems(orderRequest.orderItems());
+            Order order = orderService.createOrder(orderRequest);
+            if (order != null) {
+                return ResponseEntity.ok("주문이 성공적으로 처리되었습니다.");
+            } else {
+                return ResponseEntity.internalServerError().body("주문에 실패 했습니다.");
+            }
+        } finally {
+            lock.unlock();
         }
     }
 

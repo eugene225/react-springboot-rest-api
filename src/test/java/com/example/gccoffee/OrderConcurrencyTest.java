@@ -22,6 +22,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,50 +52,38 @@ public class OrderConcurrencyTest {
     private ProductRepository productRepository;
 
     private ProductDto productDto;
-    private List<Order> savedOrderList;
+    private List<CreateOrderRequest> savedOrderList;
 
     @BeforeEach
+    @Sql("classpath:schema.sql")
     void setUp() {
         orderRepository.deleteAll();
         productRepository.deleteAll();
     }
 
     @CsvSource({
-            "10, 10, 10, 0, 0",
-            "10, 9, 9, 0, 1",
-            "10, 11, 10, 1, 0",
-            "10, 15, 10, 5, 0"
+            "300, 300, 300, 0, 0",
+            "300, 299, 299, 0, 1",
+            "300, 301, 300, 1, 0",
+            "300, 305, 300, 5, 0"
     })
     @ParameterizedTest
     @DisplayName("동시에 주문 요청을 보내면 재고만큼 승인되고 나머지는 실패한다.")
     void orderConcurrencyTest(int stock, int orderCount, int expectedSuccess, int expectedFail, int expectedStock) {
         productDto = productRepository.insert(new ProductDto(UUID.randomUUID(), "TestProduct", Category.MILK, stock, 1500L, "concurrencyTest", LocalDateTime.now(), null));
-        savedOrderList = getSavedOrderList(10);
+        savedOrderList = getSavedOrderList(orderCount);
 
         AtomicInteger successCount = new AtomicInteger();
         AtomicInteger failCount = new AtomicInteger();
 
-//        executeConcurrentActions(orderIndex -> {
-//            try{
-//                Order order = savedOrderList.get(orderIndex);
-//                CreateOrderRequest createOrderRequest = new CreateOrderRequest(order.getEmail().toString(), order.getAddress(), order.getPostcode(), order.getOrderItems());
-//
-//                orderController.createOrder(createOrderRequest);
-//                successCount.incrementAndGet();
-//            } catch (Exception e) {
-//                failCount.incrementAndGet();
-//            }
-//        }, orderCount, 1);
-
-        for(Order order : savedOrderList) {
-            try {
-                CreateOrderRequest createOrderRequest = new CreateOrderRequest(order.getEmail().toString(), order.getAddress(), order.getPostcode(), order.getOrderItems());
-                orderController.createOrder(createOrderRequest);
+        executeConcurrentActions(orderIndex -> {
+            try{
+                orderController.createOrder(savedOrderList.get(orderIndex));
                 successCount.incrementAndGet();
-            }catch (Exception e) {
+            } catch (Exception e) {
                 failCount.incrementAndGet();
             }
-        }
+        }, orderCount, 2);
 
         ProductQuantity productQuantity = productQuantityService.findByProductId(productDto.productId());
 
@@ -111,10 +100,9 @@ public class OrderConcurrencyTest {
         AtomicInteger successCount = new AtomicInteger();
         AtomicInteger failCount = new AtomicInteger();
 
-        for(Order order : savedOrderList) {
+        for(CreateOrderRequest order : savedOrderList) {
             try {
-                CreateOrderRequest createOrderRequest = new CreateOrderRequest(order.getEmail().toString(), order.getAddress(), order.getPostcode(), order.getOrderItems());
-                orderController.createOrder(createOrderRequest);
+                orderController.createOrder(order);
                 successCount.incrementAndGet();
             }catch (Exception e) {
                 failCount.incrementAndGet();
@@ -128,14 +116,14 @@ public class OrderConcurrencyTest {
         assertThat(failCount.get()).isEqualTo(0);
     }
 
-    private List<Order> getSavedOrderList(int orderCount) {
-        List<Order> orders = new ArrayList<>();
+    private List<CreateOrderRequest> getSavedOrderList(int orderCount) {
+        List<CreateOrderRequest> orders = new ArrayList<>();
         for(long i = 1; i<=orderCount; i++) {
             final int quantity = 1;
             UUID orderId = UUID.randomUUID();
             List<OrderItem> orderItems = new ArrayList<>();
             orderItems.add(new OrderItem(orderId, productDto.productId(), productDto.productName(), productDto.price(), quantity));
-            Order order = new Order(orderId, new Email("test"+i+"@example.com"), "TestAddress"+"i", "TestPostcode"+i, orderItems, OrderStatus.ACCEPTED, LocalDateTime.now(), LocalDateTime.now());
+            CreateOrderRequest order = new CreateOrderRequest("test"+i+"@example.com", "TestAddress"+i, "TestPostcode"+i, orderItems);
             orders.add(order);
         }
         return orders;

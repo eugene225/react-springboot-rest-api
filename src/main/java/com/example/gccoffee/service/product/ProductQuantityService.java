@@ -5,6 +5,8 @@ import com.example.gccoffee.model.order.OrderItem;
 import com.example.gccoffee.model.product.ProductQuantity;
 import com.example.gccoffee.repository.product.ProductQuantityJdbcRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +27,7 @@ public class ProductQuantityService {
         return productQuantityJdbcRepository.update(productId, quantity);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void updateQuantityByOrderItems(List<OrderItem> orderItems){
         for (OrderItem orderItem : orderItems) {
             ProductQuantity productQuantity = productQuantityJdbcRepository.findByProductId(orderItem.getProductId()).get();

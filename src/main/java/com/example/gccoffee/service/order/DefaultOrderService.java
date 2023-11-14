@@ -10,6 +10,7 @@ import com.example.gccoffee.repository.order.OrderRepository;
 import com.example.gccoffee.repository.product.ProductQuantityJdbcRepository;
 import com.example.gccoffee.service.product.ProductQuantityService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -31,10 +32,10 @@ public class DefaultOrderService implements OrderService{
     }
 
     @Override
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public Order createOrder(CreateOrderRequest createOrderRequest) {
         Order order = new Order(UUID.randomUUID(), new Email(createOrderRequest.email()), createOrderRequest.address(), createOrderRequest.postcode(), createOrderRequest.orderItems(), OrderStatus.ACCEPTED, LocalDateTime.now(), null);
-        Order createdOrder = orderRepository.create(order);
-        return createdOrder;
+        return orderRepository.create(order);
     }
 
     @Override
